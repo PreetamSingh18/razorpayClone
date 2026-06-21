@@ -2,13 +2,12 @@ package com.preesa.razorpay.merchant.entity;
 
 
 import ch.qos.logback.core.boolex.EvaluationException;
+import com.preesa.razorpay.common.constants.RazorpayConstants;
 import com.preesa.razorpay.common.enums.BusinessType;
 import com.preesa.razorpay.common.enums.MerchantStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Instant;
@@ -21,6 +20,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Merchant {
 
     @Id
@@ -48,6 +48,7 @@ public class Merchant {
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 50, nullable = false)
+    @Builder.Default
     private MerchantStatus status = MerchantStatus.PENDING_KYC;
 
     private String gstId;
@@ -64,10 +65,15 @@ public class Merchant {
     @Column(length = 200)
     private String settlementBankAccountHolderName;
 
+    @Builder.Default
+    private String createdBy = RazorpayConstants.SYSTEM;
+    @Builder.Default
+    private String updatedBy = RazorpayConstants.SYSTEM;
 
-    private String createdBy;
-    private String updatedBy;
+    @CreationTimestamp
     private Instant createdAt;
+
+    @CreationTimestamp
     private Instant updatedAt;
 
 

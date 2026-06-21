@@ -2,10 +2,8 @@ package com.preesa.razorpay.merchant.entity;
 
 import com.preesa.razorpay.common.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.resilience.annotation.EnableResilientMethods;
 
 import java.time.Instant;
@@ -18,6 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AppUser {
 
     @Id
@@ -38,6 +37,7 @@ public class AppUser {
     @Column(nullable = false)
     private UserRole role;
 
+    @CreationTimestamp
     private Instant createdAt;
 
 

@@ -1,9 +1,11 @@
 package com.preesa.razorpay.merchant.entity;
 
 import ch.qos.logback.core.status.InfoStatus;
+import com.preesa.razorpay.common.constants.RazorpayConstants;
 import com.preesa.razorpay.common.enums.Environment;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ApiKey {
 
     @Id
@@ -35,15 +38,20 @@ public class ApiKey {
     private Environment environment;
 
     @Column(nullable = false)
-//    @Builder.Default
+    @Builder.Default
     private Boolean enabled= true;
 
     private Instant lastUsedAt;
     private Instant rotatedAt;
     private Instant gracePeriodExpiresAt;
 
-    private String createdBy;
-    private String updatedBy;
+    @Builder.Default
+    private String createdBy = RazorpayConstants.SYSTEM;
+    @Builder.Default
+    private String updatedBy = RazorpayConstants.SYSTEM;
+
+    @CreationTimestamp
     private Instant createdAt;
+    @CreationTimestamp
     private Instant updatedAt;
 }
