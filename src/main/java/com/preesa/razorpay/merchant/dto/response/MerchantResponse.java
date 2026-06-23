@@ -6,7 +6,7 @@ import com.preesa.razorpay.common.enums.MerchantStatus;
 import java.util.UUID;
 
 public record MerchantResponse(
-        UUID uuid,
+        UUID id,
         String name,
         String email,
         String businessName,

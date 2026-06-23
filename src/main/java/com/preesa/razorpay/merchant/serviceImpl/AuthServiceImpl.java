@@ -7,6 +7,7 @@ import com.preesa.razorpay.merchant.dto.request.MerchantSignUpRequest;
 import com.preesa.razorpay.merchant.dto.response.MerchantResponse;
 import com.preesa.razorpay.merchant.entity.AppUser;
 import com.preesa.razorpay.merchant.entity.Merchant;
+import com.preesa.razorpay.merchant.mapper.MerchantMapper;
 import com.preesa.razorpay.merchant.repository.AppUserRepository;
 import com.preesa.razorpay.merchant.repository.MerchantRepository;
 import com.preesa.razorpay.merchant.service.AuthService;
@@ -24,6 +25,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository appUserRepository;
 
+    private final MerchantMapper merchantMapper;
+
     @Override
     @Transactional
     public MerchantResponse signUp(MerchantSignUpRequest merchantSignUpRequest) {
@@ -31,12 +34,13 @@ public class AuthServiceImpl implements AuthService {
                   throw new DuplicateResourceException("DUPLICATE_MERCHANT_EMAIL","Merchant already exist with emailId :" +merchantSignUpRequest.email());
         }
 
-        Merchant merchant =Merchant.builder()
-                .email(merchantSignUpRequest.email())
-                .businessName(merchantSignUpRequest.businessName())
-                .businessType(merchantSignUpRequest.businessType())
-                .name(merchantSignUpRequest.name())
-                .build();
+//        Merchant merchant =Merchant.builder()
+//                .email(merchantSignUpRequest.email())
+//                .businessName(merchantSignUpRequest.businessName())
+//                .businessType(merchantSignUpRequest.businessType())
+//                .name(merchantSignUpRequest.name())
+//                .build();
+        Merchant  merchant = merchantMapper.toEntityFromSignUpRequest(merchantSignUpRequest);
 
         merchant = merchantRepository.save(merchant);
 
@@ -49,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
         appUserRepository.save(appUser);
 
-        return new MerchantResponse(merchant.getId(),merchant.getName(),merchant.getEmail(),merchant.getBusinessName(),merchant.getBusinessType(),merchant.getStatus());
-
+//        return new MerchantResponse(merchant.getId(),merchant.getName(),merchant.getEmail(),merchant.getBusinessName(),merchant.getBusinessType(),merchant.getStatus());
+          return merchantMapper.toResponse(merchant);
     }
 }
