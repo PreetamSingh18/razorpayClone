@@ -15,7 +15,10 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant")
+@Table(name = "merchant",
+        indexes = {
+                @Index(name = "idx_merchant_status" ,columnList = "status")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

@@ -9,7 +9,10 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant_webhook_config")
+@Table(name = "merchant_webhook_config",
+        indexes = {
+                @Index(name = "idx_merchant_webhook" ,columnList = "merchant_id, enable")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

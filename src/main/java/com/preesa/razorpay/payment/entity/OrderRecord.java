@@ -19,7 +19,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table (name = "order_record")
+@Table (name = "order_record",
+        indexes = {
+                @Index(name = "idx_order_status" ,columnList = "merchant_id, order_status"),
+                @Index(name = "idx_merchants_orders" ,columnList = "id, merchant_id")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

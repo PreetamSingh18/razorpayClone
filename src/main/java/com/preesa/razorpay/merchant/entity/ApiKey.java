@@ -6,12 +6,16 @@ import com.preesa.razorpay.common.enums.Environment;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "api_key")
+@Table(name = "api_key",
+     indexes = {
+        @Index(name = "idx_api_key_merchant_id" ,columnList = "merchant_id , enable")
+     })
 @Getter
 @Setter
 @NoArgsConstructor

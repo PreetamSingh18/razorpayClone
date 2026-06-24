@@ -16,7 +16,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "refund")
+@Table(name = "refund",
+       indexes = {
+               @Index(name = "idx_refund_payment_id_status" ,columnList = "payment_id, status"),
+               @Index(name = "idx_refund_merchant_id" ,columnList = "merchant_id"),
+
+        })
 @Getter
 @Setter
 @NoArgsConstructor
