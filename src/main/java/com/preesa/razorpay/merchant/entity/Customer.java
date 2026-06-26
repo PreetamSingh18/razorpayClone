@@ -1,5 +1,6 @@
 package com.preesa.razorpay.merchant.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Customer extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,7 +40,5 @@ public class Customer {
 
     private String gstId;
 
-    private Instant createdAt;
 
-    private Instant updatedAt;
 }

@@ -1,5 +1,6 @@
 package com.preesa.razorpay.merchant.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +12,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "merchant_webhook_config",
         indexes = {
-                @Index(name = "idx_merchant_webhook" ,columnList = "merchant_id, enable")
+                @Index(name = "idx_merchant_webhook" ,columnList = "merchant_id, enabled")
         })
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MerchantWebhookConfig {
+public class MerchantWebhookConfig extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

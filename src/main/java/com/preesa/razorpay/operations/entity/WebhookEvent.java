@@ -1,5 +1,6 @@
 package com.preesa.razorpay.operations.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.WebhookEventStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WebhookEvent {
+public class WebhookEvent  extends BaseAuditEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

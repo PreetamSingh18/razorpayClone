@@ -1,5 +1,6 @@
 package com.preesa.razorpay.payment.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.PaymentEvent;
 import com.preesa.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentTransitionLog {
+public class PaymentTransitionLog  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,7 +45,5 @@ public class PaymentTransitionLog {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "event", nullable = false)
     private PaymentEvent event;
-
-    private Instant createdAt;
 
 }

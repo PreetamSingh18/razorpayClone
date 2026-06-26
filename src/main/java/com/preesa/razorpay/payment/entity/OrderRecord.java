@@ -1,5 +1,6 @@
 package com.preesa.razorpay.payment.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.entity.Money;
 import com.preesa.razorpay.common.enums.OrderStatus;
 import com.preesa.razorpay.merchant.entity.Customer;
@@ -29,7 +30,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderRecord {
+public class OrderRecord  extends BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -57,15 +58,7 @@ public class OrderRecord {
 
     private Instant expireAt;
 
-    private String createdBy;
 
-//    @CreationTimestamp
-    @Builder.Default
-    private Instant createdAt = Instant.now();
-    private String updatedBy;
-
-    @CreationTimestamp
-    private Instant updatedAt;
 
 
 }

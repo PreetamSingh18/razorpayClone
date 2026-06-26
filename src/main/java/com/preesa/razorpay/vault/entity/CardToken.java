@@ -1,5 +1,6 @@
 package com.preesa.razorpay.vault.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -7,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "card_token")
-public class CardToken {
+public class CardToken  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

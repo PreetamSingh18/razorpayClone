@@ -1,6 +1,7 @@
 package com.preesa.razorpay.payment.entity;
 
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.entity.Money;
 import com.preesa.razorpay.common.enums.PaymentMethod;
 import com.preesa.razorpay.common.enums.PaymentStatus;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
+public class Payment  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -70,17 +71,5 @@ public class Payment {
     private Instant failedAt;
     private Instant refundedAt;
     private Instant settledAt;
-
-
-    private String createdBy;
-    private String updatedBy;
-    private Instant createdAt;
-    private Instant updatedAt;
-
-
-
-
-
-
 
 }

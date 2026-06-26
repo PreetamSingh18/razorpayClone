@@ -2,6 +2,7 @@ package com.preesa.razorpay.merchant.entity;
 
 import ch.qos.logback.core.status.InfoStatus;
 import com.preesa.razorpay.common.constants.RazorpayConstants;
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.Environment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,14 +15,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "api_key",
      indexes = {
-        @Index(name = "idx_api_key_merchant_id" ,columnList = "merchant_id , enable")
+        @Index(name = "idx_api_key_merchant_id" ,columnList = "merchant_id , enabled")
      })
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiKey {
+public class ApiKey extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,13 +53,4 @@ public class ApiKey {
     private Instant rotatedAt;
     private Instant gracePeriodExpiresAt;
 
-    @Builder.Default
-    private String createdBy = RazorpayConstants.SYSTEM;
-    @Builder.Default
-    private String updatedBy = RazorpayConstants.SYSTEM;
-
-    @CreationTimestamp
-    private Instant createdAt;
-    @CreationTimestamp
-    private Instant updatedAt;
 }

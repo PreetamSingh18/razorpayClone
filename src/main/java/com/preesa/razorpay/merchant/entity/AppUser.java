@@ -1,5 +1,6 @@
 package com.preesa.razorpay.merchant.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUser {
+public class AppUser extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,8 +42,7 @@ public class AppUser {
     @Column(nullable = false)
     private UserRole role;
 
-    @CreationTimestamp
-    private Instant createdAt;
+
 
 
 

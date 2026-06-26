@@ -1,5 +1,6 @@
 package com.preesa.razorpay.vault.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class VaultCard {
+public class VaultCard  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

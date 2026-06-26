@@ -61,7 +61,6 @@ public class OrderServiceImpl implements OrderService {
                 .amount(request.amount())
                 .receipt(request.receipt())
                 .notes(request.notes())
-                .createdBy(merchant.get().getName())
                 .expireAt(request.expireAt()!=null ? request.expireAt(): Instant.now().plus(10, ChronoUnit.MINUTES))
                 .build();
 

@@ -1,6 +1,7 @@
 package com.preesa.razorpay.payment.entity;
 
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.entity.Money;
 import com.preesa.razorpay.common.enums.RefundStatus;
 import jakarta.persistence.*;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Refund {
+public class Refund extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

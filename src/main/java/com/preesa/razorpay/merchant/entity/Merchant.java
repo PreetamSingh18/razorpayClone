@@ -3,6 +3,7 @@ package com.preesa.razorpay.merchant.entity;
 
 import ch.qos.logback.core.boolex.EvaluationException;
 import com.preesa.razorpay.common.constants.RazorpayConstants;
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.BusinessType;
 import com.preesa.razorpay.common.enums.MerchantStatus;
 import jakarta.persistence.*;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Merchant {
+public class Merchant  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
@@ -67,17 +68,6 @@ public class Merchant {
 
     @Column(length = 200)
     private String settlementBankAccountHolderName;
-
-    @Builder.Default
-    private String createdBy = RazorpayConstants.SYSTEM;
-    @Builder.Default
-    private String updatedBy = RazorpayConstants.SYSTEM;
-
-    @CreationTimestamp
-    private Instant createdAt;
-
-    @CreationTimestamp
-    private Instant updatedAt;
 
 
 }

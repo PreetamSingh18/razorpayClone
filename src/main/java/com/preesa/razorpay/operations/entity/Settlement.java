@@ -1,5 +1,6 @@
 package com.preesa.razorpay.operations.entity;
 
+import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.entity.Money;
 import com.preesa.razorpay.common.enums.SettlementStatus;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Settlement {
+public class Settlement  extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
