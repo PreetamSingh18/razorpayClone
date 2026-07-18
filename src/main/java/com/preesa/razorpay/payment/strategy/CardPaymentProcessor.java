@@ -4,9 +4,11 @@ import com.preesa.razorpay.payment.gateway.dto.PaymentResult;
 import com.preesa.razorpay.payment.processor.PaymentProcessor;
 import com.preesa.razorpay.payment.processor.dto.PaymentProcessorRequest;
 import com.preesa.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class CardPaymentProcessor implements PaymentProcessor {
     /**
      * @param request

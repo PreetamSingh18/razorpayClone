@@ -1,13 +1,11 @@
 package com.preesa.razorpay.payment.entity;
 
 import com.preesa.razorpay.common.entity.BaseAuditEntity;
+import com.preesa.razorpay.common.enums.PaymentActor;
 import com.preesa.razorpay.common.enums.PaymentEvent;
 import com.preesa.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -21,6 +19,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PaymentTransitionLog  extends BaseAuditEntity {
 
     @Id
@@ -39,11 +38,13 @@ public class PaymentTransitionLog  extends BaseAuditEntity {
     @Column(name = "to_status" , nullable = false)
     private PaymentStatus toStatus;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(length = 50, nullable = false)
-    private String actor;
+    private PaymentActor actor;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "event", nullable = false)
     private PaymentEvent event;
 
+    Instant occurredAt;
 }
