@@ -24,11 +24,4 @@ public class PaymentProcessorRouter {
         return paymentProcessor.charge(request);
     }
 
-    public PaymentResult capture(PaymentMethod method, UUID paymentId) {
-        PaymentProcessor paymentProcessor= paymentProcessorMap.get(method);
-        if (paymentProcessor == null) {
-            throw new IllegalArgumentException("Processor for " + method + "  method doesn't found");
-        }
-        return paymentProcessor.capture(paymentId);
-    }
 }

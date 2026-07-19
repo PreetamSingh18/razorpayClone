@@ -1,11 +1,9 @@
 package com.preesa.razorpay.vault.entity;
 
 import com.preesa.razorpay.common.entity.BaseAuditEntity;
+import com.preesa.razorpay.common.enums.CardBrand;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class VaultCard  extends BaseAuditEntity {
 
     @Id
@@ -29,7 +28,8 @@ public class VaultCard  extends BaseAuditEntity {
     private String bin;
 
     @Column(nullable = false)
-    private String brand;
+    @Enumerated(value = EnumType.STRING)
+    private CardBrand brand;
 
     @Column(nullable = false)
     private byte[] encryptedPan;

@@ -10,5 +10,5 @@ public interface PaymentProcessor {
 
     PaymentProcessorResponse charge(PaymentProcessorRequest request) throws Exception;
 
-    PaymentResult capture(UUID paymentId);
+
 }

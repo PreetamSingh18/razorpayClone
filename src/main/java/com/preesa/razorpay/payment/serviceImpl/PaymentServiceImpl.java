@@ -88,7 +88,10 @@ public class PaymentServiceImpl implements PaymentService {
               //  payment.setStatus(PaymentStatus.FAILED);
                 paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
             }
-            case PaymentResult.Success(String bankReference) -> payment.setBankReference(bankReference);
+            case PaymentResult.Success(String bankReference) -> {
+                log.warn("Invalid State ");
+                return null;
+            }
         }
         orderRepository.save(orderRecord);
         payment = paymentRepository.save(payment);
@@ -110,7 +113,8 @@ public class PaymentServiceImpl implements PaymentService {
         paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
 
 
-        PaymentResult result = paymentProcessorRouter.capture(payment.getMethod(), paymentId);
+     //   PaymentResult result = paymentProcessorRouter.capture(payment.getMethod(), paymentId);
+          PaymentResult result = paymentGatewayRouter.capture(payment.getMethod(), paymentId);
 
         if (result instanceof PaymentResult.Success success) {
            // payment.setStatus(PaymentStatus.CAPTURED);

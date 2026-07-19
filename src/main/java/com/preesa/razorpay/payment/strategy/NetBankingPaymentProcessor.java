@@ -29,19 +29,11 @@ public class NetBankingPaymentProcessor implements PaymentProcessor {
 
         String processorRef = "NET_BANKING_REFERENCE_"+ RandomizerUtil.randomBase64(24);
 
-        String bankReference = "https://:redirect.com"+processorRef;
+       // String bankReference = "https://:redirect.com"+processorRef;
 
-        return new PaymentProcessorResponse.Success(processorRef,bankReference);
+        return new PaymentProcessorResponse.Pending(processorRef);
 
 
     }
 
-    /**
-     * @param paymentId
-     * @return
-     */
-    @Override
-    public PaymentResult capture(UUID paymentId) {
-        return new PaymentResult.Success("NET_BANKING_REF");
-    }
 }

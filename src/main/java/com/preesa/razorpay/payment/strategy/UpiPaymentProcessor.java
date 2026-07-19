@@ -30,19 +30,11 @@ public class UpiPaymentProcessor implements PaymentProcessor {
 
         String processorRef = "UPI_REFERENCE_"+ RandomizerUtil.randomBase64(24);
 
-        String bankReference = "BANK_REFERENCE_"+ RandomizerUtil.randomBase64(24);
+      //  String bankReference = "BANK_REFERENCE_"+ RandomizerUtil.randomBase64(24);
 
-        return new PaymentProcessorResponse.Success(processorRef,bankReference);
+        return new PaymentProcessorResponse.Pending(processorRef);
 
 
     }
 
-    /**
-     * @param paymentId
-     * @return
-     */
-    @Override
-    public PaymentResult capture(UUID paymentId) {
-        return null;
-    }
 }
