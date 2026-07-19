@@ -15,4 +15,22 @@ spring:
 
 vault:
   service:
-     master-key: HelloRazorpayProject
+    master-key: HelloRazorpayProject
+
+payment:
+  simulator:
+    poll-interval-ms: 500000000
+    chaos-mode: NORMAL
+    methods:
+      UPI:
+        min-delay-seconds: 1
+        max-delay-seconds: 3
+        success-rate: 90
+      NETBANKING:
+        min-delay-seconds: 4
+        max-delay-seconds: 10
+        success-rate: 90
+      CARD:
+        min-delay-seconds: 2
+        max-delay-seconds: 4
+        success-rate: 90

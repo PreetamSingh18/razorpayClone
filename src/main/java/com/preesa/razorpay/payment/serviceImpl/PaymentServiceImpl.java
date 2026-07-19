@@ -78,6 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
 
          payment = paymentRepository.save(payment);
 
+        paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_ATTEMPT);
        PaymentResult result= paymentGatewayRouter.initiate(new PaymentRequest(payment.getId(),request.orderId(),merchantId,orderRecord.getAmount(),request.paymentMethod(),request.methodDetails()));
 
         switch (result) {
@@ -132,5 +133,58 @@ public class PaymentServiceImpl implements PaymentService {
         payment = paymentRepository.save(payment);
 
         return paymentMapper.toResponse(payment);
+    }
+
+    /**
+     * @param id
+     * @param isApproved
+     * @param bankRef
+     * @param errorCode
+     * @param errorDesc
+     */
+    @Override
+    @Transactional
+    public void resolveAuthorization(UUID id, boolean isApproved, String bankRef, String errorCode, String errorDesc) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Payment",id));
+
+        if(payment.getStatus()!= PaymentStatus.AUTHORIZING){
+            log.warn("Invalid payment status change attempt while resolveAuthorization");
+            throw new BusinessRuleViolationException("INVALID_PAYMENT_STATUS","Invalid payment status change attempt while resolveAuthorization");
+        }
+
+        OrderRecord orderRecord = payment.getOrder();
+
+        if(isApproved){
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_SUCCESS);
+            payment.setBankReference(bankRef);
+            payment.setAuthorizedAt(Instant.now());
+
+            paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
+            PaymentResult result = paymentGatewayRouter.capture(payment.getMethod(), id);
+
+            if(result instanceof PaymentResult.Success){
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
+                payment.setCapturedAt(Instant.now());
+                orderRecord.setOrderStatus(OrderStatus.PAID);
+            }
+            else   if(result instanceof PaymentResult.Failure failure){
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorCode(failure.errorDescription());
+            }
+
+        }
+        else{
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
+            payment.setErrorCode(errorCode);
+            payment.setErrorDescription(errorDesc);
+        }
+
+    paymentRepository.save(payment);
+    orderRepository.save(orderRecord);
+
+    //TODO: Kafka Inegration
+
     }
 }
