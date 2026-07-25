@@ -1,5 +1,6 @@
 package com.preesa.razorpay.common.entity;
 
+import com.preesa.razorpay.common.constants.RazorpayConstants;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -20,9 +21,9 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseAuditEntity {
 
-    private String createdBy;
+    private String createdBy = RazorpayConstants.SYSTEM;
 
-    private String updatedBy;
+    private String updatedBy = RazorpayConstants.SYSTEM;
 
     @CreatedDate
     private Instant createdAt;

@@ -1,7 +1,9 @@
 package com.preesa.razorpay.merchant.controller;
 
 
+import com.preesa.razorpay.merchant.dto.request.LoginRequest;
 import com.preesa.razorpay.merchant.dto.request.MerchantSignUpRequest;
+import com.preesa.razorpay.merchant.dto.response.LoginResponse;
 import com.preesa.razorpay.merchant.dto.response.MerchantResponse;
 import com.preesa.razorpay.merchant.service.AuthService;
 import jakarta.validation.Valid;
@@ -25,6 +27,14 @@ public class AuthController {
              return ResponseEntity.status(HttpStatus.CREATED).body(
                      authService.signUp(merchantSignUpRequest)
              );
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse>login(@RequestBody @Valid LoginRequest loginRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                authService.login(loginRequest)
+        );
     }
 
 }

@@ -3,16 +3,24 @@ package com.preesa.razorpay.merchant.serviceImpl;
 import com.preesa.razorpay.common.enums.MerchantStatus;
 import com.preesa.razorpay.common.enums.UserRole;
 import com.preesa.razorpay.common.exceptions.DuplicateResourceException;
+import com.preesa.razorpay.common.exceptions.ResourceNotFoundException;
+import com.preesa.razorpay.merchant.dto.request.LoginRequest;
 import com.preesa.razorpay.merchant.dto.request.MerchantSignUpRequest;
+import com.preesa.razorpay.merchant.dto.response.LoginResponse;
 import com.preesa.razorpay.merchant.dto.response.MerchantResponse;
 import com.preesa.razorpay.merchant.entity.AppUser;
 import com.preesa.razorpay.merchant.entity.Merchant;
 import com.preesa.razorpay.merchant.mapper.MerchantMapper;
 import com.preesa.razorpay.merchant.repository.AppUserRepository;
 import com.preesa.razorpay.merchant.repository.MerchantRepository;
+import com.preesa.razorpay.merchant.security.JwtUtill;
 import com.preesa.razorpay.merchant.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +34,12 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository appUserRepository;
 
     private final MerchantMapper merchantMapper;
+
+    private final AuthenticationManager authenticationManager;
+
+    private  final JwtUtill jwtUtill ;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -47,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         AppUser appUser = AppUser.builder()
                 .email(merchantSignUpRequest.email())
                 .merchant(merchant)
-                .passwordHash(merchantSignUpRequest.password()) //TODO: Encrypt the password
+                .passwordHash(passwordEncoder.encode(merchantSignUpRequest.password()))
                 .role(UserRole.OWNER)
                 .build();
 
@@ -55,5 +69,19 @@ public class AuthServiceImpl implements AuthService {
 
 //        return new MerchantResponse(merchant.getId(),merchant.getName(),merchant.getEmail(),merchant.getBusinessName(),merchant.getBusinessType(),merchant.getStatus());
           return merchantMapper.toResponse(merchant);
+    }
+
+    /**
+     * @param loginRequest
+     * @return
+     */
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
+
+        AppUser  appUser= appUserRepository.findByEmail(loginRequest.email()).orElseThrow(()->new ResourceNotFoundException("User",loginRequest.email()));
+
+      String token=  jwtUtill.generateAccessToken(appUser.getEmail(),appUser.getMerchant().getId(),appUser.getRole().name());
+        return new LoginResponse(token);
     }
 }

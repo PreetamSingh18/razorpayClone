@@ -20,7 +20,6 @@ public class PaymentTransitionService {
 
     public PaymentStatus apply(Payment payment, PaymentEvent event){
         PaymentStatus nextStatus = paymentStateMachine.transition(payment.getStatus(),event);
-        payment.setStatus(nextStatus);
         PaymentTransitionLog log = PaymentTransitionLog.builder()
                 .actor(PaymentActor.SYSTEM) //TODO: Fetch Merchant context to identify actor - spring security.
                 .toStatus(nextStatus)
@@ -29,6 +28,8 @@ public class PaymentTransitionService {
                 .payment(payment)
                 .occurredAt(Instant.now())
                 .build();
+
+        payment.setStatus(nextStatus);
         paymentTransitionLogRepository.save(log);
         return nextStatus;
     }

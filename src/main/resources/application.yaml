@@ -5,6 +5,7 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/razorpayDB}
     username: ${DB_USER:postgres}
     password: ${DB_PASS:admin}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -34,3 +35,7 @@ payment:
         min-delay-seconds: 2
         max-delay-seconds: 4
         success-rate: 90
+
+
+jwt:
+  secret-key: hiuhuihihiujiabcdefgkjnjnhijlmnopqrstuvwxyz109

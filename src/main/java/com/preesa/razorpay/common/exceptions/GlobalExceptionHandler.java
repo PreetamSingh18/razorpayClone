@@ -1,10 +1,15 @@
 package com.preesa.razorpay.common.exceptions;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,5 +38,16 @@ public class GlobalExceptionHandler {
         String errorCode= "STATUS_TRANSITION_NOT_ALLOWED";
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.of(errorCode,ex.getMessage()));
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException (MethodArgumentNotValidException ex, HttpServletRequest request){
+
+        List<ErrorResponse.fieldErrorResponse> list = ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -> new ErrorResponse.fieldErrorResponse(fe.getField(), fe.getDefaultMessage()))
+                .toList();
+
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of("VAIDATION_FAILED","Request Validation Failed",list));
     }
 }
