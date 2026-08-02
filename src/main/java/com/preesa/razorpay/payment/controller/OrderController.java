@@ -1,5 +1,6 @@
 package com.preesa.razorpay.payment.controller;
 
+import com.preesa.razorpay.merchant.security.MerchantContext;
 import com.preesa.razorpay.payment.dto.request.CreateOrderRequest;
 import com.preesa.razorpay.payment.dto.response.OrderResponse;
 import com.preesa.razorpay.payment.dto.response.PaymentResponse;
@@ -19,26 +20,26 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
+    private final MerchantContext merchantContext;
 
-    UUID merchantId = UUID.fromString("b8667f5c-1b32-43c8-bb57-fec6bd350191");
 
     @PostMapping("/create")
     public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(merchantId,createOrderRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(merchantContext.getMerchantId(),createOrderRequest));
     }
 
     @GetMapping("/get/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID orderId){
-        return ResponseEntity.ok(orderService.getOrderById(orderId,merchantId));
+        return ResponseEntity.ok(orderService.getOrderById(orderId,merchantContext.getMerchantId()));
     }
 
     @PostMapping("/cancel/{orderId}")
     public ResponseEntity<String> cancelOrderById(@PathVariable UUID orderId){
-        return ResponseEntity.ok(orderService.cancelOrderById(orderId,merchantId));
+        return ResponseEntity.ok(orderService.cancelOrderById(orderId,merchantContext.getMerchantId()));
     }
 
     @GetMapping("/getpayments/{orderId}")
     public ResponseEntity<List<PaymentResponse>>getPayments(@PathVariable UUID orderId){
-        return ResponseEntity.ok(orderService.getPaymentByOrderId(orderId,merchantId));
+        return ResponseEntity.ok(orderService.getPaymentByOrderId(orderId,merchantContext.getMerchantId()));
     }
 }

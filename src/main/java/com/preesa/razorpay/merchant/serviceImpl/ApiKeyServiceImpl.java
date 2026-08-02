@@ -15,6 +15,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final ApiKeyMapper apiKeyMapper;
 
+    private BCryptPasswordEncoder BCRYPT= new BCryptPasswordEncoder();
+
     @Override
     public ApiKeyCreateResponse create(UUID merchantId, ApiKeyCreateRequest apiKeyCreateRequest) {
         Merchant merchant = merchantRepository.findById(merchantId)
@@ -49,7 +52,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         ApiKey apiKey = ApiKey.builder()
                 .merchant(merchant)
                 .keyId(keyId)
-                .keySecretHash(secretKey)
+                .keySecretHash(BCRYPT.encode(secretKey))
                 .environment(apiKeyCreateRequest.environment())
                 .build();
 
@@ -103,7 +106,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         if(!apiKey.getEnabled()) throw new RuntimeException("Can't rotate a disabled key");
         String newRawSecretKey= RandomizerUtil.randomBase64(40);// TODO : encrypt
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
-        apiKey.setKeySecretHash(newRawSecretKey);
+        apiKey.setKeySecretHash(BCRYPT.encode(newRawSecretKey));
         apiKey.setGracePeriodExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
         apiKey.setUpdatedAt(Instant.now());
         apiKey.setUpdatedBy("SYSTEM");

@@ -3,6 +3,7 @@ package com.preesa.razorpay.merchant.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,10 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+
     @Bean
+    @Order(1)
     public SecurityFilterChain jwtChain(HttpSecurity http) {
         return http
                 .securityMatcher(JWT_ROUTES)
@@ -36,6 +40,22 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add jwtAuthenticationFilter before UsernamePasswordAuthenticationFilter
+                .build();
+
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain apiKeyChain(HttpSecurity http) {
+        return http
+                .securityMatcher(AUTH_ROUTES)
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add apiKeyAuthenticationFilter before UsernamePasswordAuthenticationFilter
                 .build();
 
     }

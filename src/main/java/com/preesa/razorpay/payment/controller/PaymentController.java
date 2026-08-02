@@ -1,5 +1,6 @@
 package com.preesa.razorpay.payment.controller;
 
+import com.preesa.razorpay.merchant.security.MerchantContext;
 import com.preesa.razorpay.payment.dto.request.PaymentInitRequest;
 import com.preesa.razorpay.payment.dto.response.PaymentResponse;
 import com.preesa.razorpay.payment.service.PaymentService;
@@ -20,16 +21,17 @@ import java.util.UUID;
 public class PaymentController {
 
     private PaymentService paymentService;
+    private final MerchantContext merchantContext;
 
-    UUID merchantId = UUID.fromString("b8667f5c-1b32-43c8-bb57-fec6bd350191");
+
 
     @PostMapping("/initiate")
     public ResponseEntity<PaymentResponse>initiate(@Valid @RequestBody PaymentInitRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.initiate(merchantId,request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.initiate(merchantContext.getMerchantId(),request));
     }
     @PostMapping("/{paymentId}/capture")
     public ResponseEntity<PaymentResponse>capture(UUID merchantId,UUID paymentId){
-        return ResponseEntity.ok(paymentService.capture(merchantId,paymentId));
+        return ResponseEntity.ok(paymentService.capture(merchantContext.getMerchantId(),paymentId));
     }
 
 
