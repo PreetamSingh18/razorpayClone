@@ -2,6 +2,7 @@ package com.preesa.razorpay.merchant.serviceImpl;
 
 import com.preesa.razorpay.common.exceptions.ResourceNotFoundException;
 import com.preesa.razorpay.common.util.RandomizerUtil;
+import com.preesa.razorpay.merchant.cache.ApiKeyCache;
 import com.preesa.razorpay.merchant.dto.request.ApiKeyCreateRequest;
 import com.preesa.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.preesa.razorpay.merchant.dto.response.ApiKeyResponse;
@@ -37,6 +38,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
 
     private final ApiKeyMapper apiKeyMapper;
+
+    private final ApiKeyCache apiKeyCache;
 
     private BCryptPasswordEncoder BCRYPT= new BCryptPasswordEncoder();
 
@@ -91,6 +94,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
             // no need to add .save in this case
             //apiKeyRepository.save(apiKey);
             response="Access revoked for KeyId "+keyId;
+            apiKeyCache.evict(apiKey.getKeyId()); // remove key from redis cache if present.
         }
 
         return response;
@@ -110,6 +114,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey.setGracePeriodExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
         apiKey.setUpdatedAt(Instant.now());
         apiKey.setUpdatedBy("SYSTEM");
+        apiKeyCache.evict(apiKey.getKeyId());  // remove key from redis cache if present.
 
        return new ApiKeyCreateResponse(apiKey.getId(),apiKey.getKeyId(),newRawSecretKey,apiKey.getEnvironment());
 //        return apiKeyMapper.toApiKeyCreateResponse(apiKey);

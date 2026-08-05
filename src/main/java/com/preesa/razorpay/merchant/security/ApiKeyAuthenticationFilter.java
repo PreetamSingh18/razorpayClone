@@ -1,5 +1,7 @@
 package com.preesa.razorpay.merchant.security;
 
+import com.preesa.razorpay.merchant.cache.ApiKeyCache;
+import com.preesa.razorpay.merchant.cache.ApiKeyCacheEntry;
 import com.preesa.razorpay.merchant.entity.ApiKey;
 import com.preesa.razorpay.merchant.repository.ApiKeyRepository;
 import jakarta.servlet.FilterChain;
@@ -22,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final BCryptPasswordEncoder BCRYPT= new BCryptPasswordEncoder();
     private final  ApiKeyRepository apiKeyRepository;
     private final MerchantContext merchantContext;
+    private final ApiKeyCache apiKeyCache;
 
     /**
      * @param request
@@ -58,11 +62,18 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             String keyId = decoded[0];
             String secretKey = decoded[1];
 
+        // Implementing Redis Cache:-
 
-            ApiKey apiKey = apiKeyRepository.findByKeyId(keyId)
-                    .orElseThrow(() -> new BadRequestException("Invalid or Missing API Key"));
+//            ApiKey apiKey = apiKeyRepository.findByKeyId(keyId)
+//                    .orElseThrow(() -> new BadRequestException("Invalid or Missing API Key"));
 
-            if (!apiKey.getEnabled() || !secretKeyMatches(apiKey, secretKey)) {
+           ApiKeyCacheEntry apiKeyCacheEntry = apiKeyCache.get(keyId).orElse(null);
+//                   .orElse(loadAndCache(keyId));
+           if(apiKeyCacheEntry== null){
+               apiKeyCacheEntry= loadAndCache(keyId);
+            }
+
+            if (apiKeyCacheEntry != null && !apiKeyCacheEntry.enabled() || !secretKeyMatches(apiKeyCacheEntry, secretKey)) {
                 throw new BadRequestException("Disabled API Key or Mismatch Secret Key ");
             }
 
@@ -71,7 +82,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
                     List.of(new SimpleGrantedAuthority("API_KEY_ROLE_")));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-            merchantContext.setMerchantId(apiKey.getMerchant().getId());
+            merchantContext.setMerchantId(apiKeyCacheEntry.merchantId());
             merchantContext.setKeyId(keyId);
 
             filterChain.doFilter(request, response);
@@ -83,13 +94,29 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private boolean secretKeyMatches(ApiKey apiKey, String secretKey) {
-        String hashedSecretKey=apiKey.getKeySecretHash();
+    private ApiKeyCacheEntry loadAndCache(String keyId) {
+        ApiKey apiKey = apiKeyRepository.findByKeyId(keyId).orElse(null);
+        if(apiKey == null){
+            return null;
+        }
+        ApiKeyCacheEntry apiKeyCacheEntry= new ApiKeyCacheEntry(apiKey.getMerchant().getId(),
+                apiKey.getKeyId(),
+                apiKey.getKeySecretHash(),
+                apiKey.getPreviousKeySecretHash(),
+                apiKey.getEnvironment(),
+                apiKey.getEnabled(),
+                apiKey.getGracePeriodExpiresAt());
+        apiKeyCache.put(keyId,apiKeyCacheEntry);
+        return apiKeyCacheEntry;
+    }
+
+    private boolean secretKeyMatches(ApiKeyCacheEntry apiKey, String secretKey) {
+        String hashedSecretKey=apiKey.keySecretHash();
         if (new BCryptPasswordEncoder().matches(secretKey,hashedSecretKey )) {
             return true;
         }
-        boolean graceTime = apiKey.getGracePeriodExpiresAt() != null && Instant.now().isBefore(apiKey.getGracePeriodExpiresAt());
-        return graceTime && apiKey.getPreviousKeySecretHash() != null && BCRYPT.matches(secretKey, apiKey.getPreviousKeySecretHash());
+       // boolean graceTime = apiKey.getGracePeriodExpiresAt() != null && Instant.now().isBefore(apiKey.getGracePeriodExpiresAt());
+        return apiKey.isInGracePeriod() && apiKey.previousKeySecretHash() != null && BCRYPT.matches(secretKey, apiKey.previousKeySecretHash());
     }
 
     private String[] decode(String rawString) {
