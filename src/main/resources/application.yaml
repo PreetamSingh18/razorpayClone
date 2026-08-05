@@ -16,7 +16,7 @@ spring:
 
 vault:
   service:
-    master-key: HelloRazorpayProject
+    master-key: a019mna123gaplmer17834mce9qp10h4
 
 payment:
   simulator:

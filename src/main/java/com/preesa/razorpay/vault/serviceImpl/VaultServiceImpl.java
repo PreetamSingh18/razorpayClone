@@ -45,7 +45,7 @@ public class VaultServiceImpl implements VaultService {
     @Override
     public TokenizerResponse tokenizer(TokenizerRequest request, UUID merchantId) {
         String lastFour = request.pan().substring(request.pan().length() - 4);
-        String bin = request.pan().substring(0, request.pan().length() - 6);
+        String bin = request.pan().substring(0, 6);
         CardBrand cardBrand = detectBrand(request.pan());
 
         byte[] dek= KeyGenerators.secureRandom(32).generateKey();
@@ -74,7 +74,7 @@ public class VaultServiceImpl implements VaultService {
         cardTokenRepository.save(cardToken);
 
 
-        return new TokenizerResponse(token,cardBrand,lastFour,request.expiryMonth(),request.expiryYear());
+        return new TokenizerResponse(token,cardBrand,lastFour,Integer.parseInt(request.expiryMonth()),request.expiryYear());
     }
 
     /**

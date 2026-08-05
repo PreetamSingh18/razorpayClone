@@ -11,6 +11,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,9 +29,9 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final String BASIC_PREFIX = "Basic ";
-    private PasswordEncoder passwordEncoder;
-    private ApiKeyRepository apiKeyRepository;
-    private MerchantContext merchantContext;
+    private final BCryptPasswordEncoder BCRYPT= new BCryptPasswordEncoder();
+    private final  ApiKeyRepository apiKeyRepository;
+    private final MerchantContext merchantContext;
 
     /**
      * @param request
@@ -53,7 +54,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             String rawString = authorizationHeader.substring(BASIC_PREFIX.length());
 
             String[] decoded = decode(rawString);
-            assert decoded != null;
+//            assert decoded != null;
             String keyId = decoded[0];
             String secretKey = decoded[1];
 
@@ -83,11 +84,12 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean secretKeyMatches(ApiKey apiKey, String secretKey) {
-        if (passwordEncoder.matches(secretKey, apiKey.getKeySecretHash())) {
+        String hashedSecretKey=apiKey.getKeySecretHash();
+        if (new BCryptPasswordEncoder().matches(secretKey,hashedSecretKey )) {
             return true;
         }
         boolean graceTime = apiKey.getGracePeriodExpiresAt() != null && Instant.now().isBefore(apiKey.getGracePeriodExpiresAt());
-        return graceTime && apiKey.getPreviousKeySecretHash() != null && passwordEncoder.matches(secretKey, apiKey.getPreviousKeySecretHash());
+        return graceTime && apiKey.getPreviousKeySecretHash() != null && BCRYPT.matches(secretKey, apiKey.getPreviousKeySecretHash());
     }
 
     private String[] decode(String rawString) {

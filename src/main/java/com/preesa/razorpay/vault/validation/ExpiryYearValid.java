@@ -10,8 +10,7 @@ import java.util.List;
 @Target({ElementType.FIELD,ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint( validatedBy = {}
-)
+@Constraint( validatedBy = {ExpiryYearValidator.class})
 public @interface ExpiryYearValid {
     String message() default "Expiry Year can not be in Past";
 

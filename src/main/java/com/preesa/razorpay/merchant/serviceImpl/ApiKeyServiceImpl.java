@@ -58,8 +58,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
         apiKey = apiKeyRepository.save(apiKey);
 
-        //return new ApiKeyCreateResponse(apiKey.getId(),apiKey.getKeyId(),secretKey,apiKey.getEnvironment());
-        return apiKeyMapper.toApiKeyCreateResponse(apiKey);
+        return new ApiKeyCreateResponse(apiKey.getId(),apiKey.getKeyId(),secretKey,apiKey.getEnvironment());
+       // return apiKeyMapper.toApiKeyCreateResponse(apiKey);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey.setUpdatedAt(Instant.now());
         apiKey.setUpdatedBy("SYSTEM");
 
-//        return new ApiKeyCreateResponse(apiKey.getId(),apiKey.getKeyId(),newRawSecretKey,apiKey.getEnvironment());
-        return apiKeyMapper.toApiKeyCreateResponse(apiKey);
+       return new ApiKeyCreateResponse(apiKey.getId(),apiKey.getKeyId(),newRawSecretKey,apiKey.getEnvironment());
+//        return apiKeyMapper.toApiKeyCreateResponse(apiKey);
     }
 }
