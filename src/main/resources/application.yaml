@@ -44,3 +44,10 @@ payment:
 
 jwt:
   secret-key: hiuhuihihiujiabcdefgkjnjnhijlmnopqrstuvwxyz109
+
+app:
+  rate-limit:
+    method: fixed
+    use-case:
+      api-key:
+        requests-per-minute: 2

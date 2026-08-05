@@ -1,5 +1,8 @@
 package com.preesa.razorpay.merchant.security;
 
+import com.preesa.razorpay.common.exceptions.RateLimitException;
+import com.preesa.razorpay.common.ratelimit.RateLimitResult;
+import com.preesa.razorpay.common.ratelimit.RateLimiter;
 import com.preesa.razorpay.merchant.cache.ApiKeyCache;
 import com.preesa.razorpay.merchant.cache.ApiKeyCacheEntry;
 import com.preesa.razorpay.merchant.entity.ApiKey;
@@ -9,7 +12,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +34,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
@@ -36,6 +43,10 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final  ApiKeyRepository apiKeyRepository;
     private final MerchantContext merchantContext;
     private final ApiKeyCache apiKeyCache;
+    private final RateLimiter rateLimiter;
+
+    @Value("${app.rate-limit.use-case.api-key.requests-per-minute:60}")
+    private int maxRequestAllowed;
 
     /**
      * @param request
@@ -68,7 +79,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 //                    .orElseThrow(() -> new BadRequestException("Invalid or Missing API Key"));
 
            ApiKeyCacheEntry apiKeyCacheEntry = apiKeyCache.get(keyId).orElse(null);
-//                   .orElse(loadAndCache(keyId));
            if(apiKeyCacheEntry== null){
                apiKeyCacheEntry= loadAndCache(keyId);
             }
@@ -77,6 +87,18 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadRequestException("Disabled API Key or Mismatch Secret Key ");
             }
 
+            //Implementing Rate limiting
+
+            RateLimitResult rateLimitResult=rateLimiter.check("apiKey:"+keyId,maxRequestAllowed,60);
+
+
+            if(!rateLimitResult.isAllowed()){
+                log.error("Too many request for keyId"+ keyId);
+                throw  new RateLimitException("Too many request for keyId"+ keyId, rateLimitResult.retryAfterSeconds()) ;
+            }
+
+            response.setHeader("X-RateLimit-Remaining", String.valueOf(rateLimitResult.remainingRequests()));
+            response.setHeader("X-RateLimit-Limit", String.valueOf(maxRequestAllowed));
 
             var auth = new UsernamePasswordAuthenticationToken(keyId, null,
                     List.of(new SimpleGrantedAuthority("API_KEY_ROLE_")));
