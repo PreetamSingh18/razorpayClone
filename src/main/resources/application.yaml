@@ -47,7 +47,7 @@ jwt:
 
 app:
   rate-limit:
-    method: fixed
+    method: bucket
     use-case:
       api-key:
         requests-per-minute: 2
