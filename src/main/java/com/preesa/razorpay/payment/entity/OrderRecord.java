@@ -38,6 +38,9 @@ public class OrderRecord  extends BaseAuditEntity {
     @Column(nullable = false)
     private UUID merchantId;
 
+    @Column(name =  "customer_id")
+    private UUID customerId;
+
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

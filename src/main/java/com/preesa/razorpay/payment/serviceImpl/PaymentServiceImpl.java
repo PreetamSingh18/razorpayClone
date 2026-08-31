@@ -53,7 +53,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentResponse initiate(UUID merchantId, PaymentInitRequest request) {
+/*
         OrderRecord orderRecord = orderRepository.findByMerchantIdAndId(merchantId, request.orderId());
+*/
+        //PESSIMISTIC_WRITE LOCK
+        OrderRecord orderRecord = orderRepository.findByMerchantIdAndIdForUpdate(merchantId, request.orderId());
 
         if (orderRecord == null) {
             throw new ResourceNotFoundException("order", request.orderId());
@@ -108,8 +112,11 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public PaymentResponse capture(UUID merchantId, UUID paymentId) {
-        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId).orElseThrow(() -> new ResourceNotFoundException("payment", paymentId));
+//        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId).orElseThrow(() -> new ResourceNotFoundException("payment", paymentId));
 
+        //PESSIMISTIC_WRITE LOCK
+        Payment payment = paymentRepository.findByIdAndMerchantIdForUpdate(paymentId, merchantId)
+                .orElseThrow(() -> new ResourceNotFoundException("payment", paymentId));
         //payment.setStatus(PaymentStatus.CAPTURING);
         paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
 
@@ -145,7 +152,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void resolveAuthorization(UUID id, boolean isApproved, String bankRef, String errorCode, String errorDesc) {
-        Payment payment = paymentRepository.findById(id)
+//        Payment payment = paymentRepository.findById(id)
+//                .orElseThrow(()->new ResourceNotFoundException("Payment",id));
+
+        // PESSIMISTIC_WRITE LOCK
+        Payment payment = paymentRepository.findByIdForUpdate(id)
                 .orElseThrow(()->new ResourceNotFoundException("Payment",id));
 
         if(payment.getStatus()!= PaymentStatus.AUTHORIZING){

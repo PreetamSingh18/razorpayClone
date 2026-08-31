@@ -23,7 +23,6 @@ public class CardToken  extends BaseAuditEntity {
     @Column(nullable = false)
     private UUID merchantId;
 
-    @Column(nullable = false)
     private UUID customerId;
 
     @Column(nullable = false, length = 50, unique = true)

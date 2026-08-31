@@ -7,6 +7,7 @@ import com.preesa.razorpay.common.exceptions.DuplicateResourceException;
 import com.preesa.razorpay.common.exceptions.ResourceNotFoundException;
 import com.preesa.razorpay.merchant.entity.Merchant;
 import com.preesa.razorpay.merchant.repository.MerchantRepository;
+import com.preesa.razorpay.merchant.service.CustomerService;
 import com.preesa.razorpay.payment.dto.request.CreateOrderRequest;
 import com.preesa.razorpay.payment.dto.response.OrderResponse;
 import com.preesa.razorpay.payment.dto.response.PaymentResponse;
@@ -40,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderMapper orderMapper;
+    private final CustomerService customerService;
 
     /**
      * @param merchantId
@@ -56,8 +58,18 @@ public class OrderServiceImpl implements OrderService {
             throw new DuplicateResourceException("ORDER_RECEIPT_DUPLICATE", "Order already exists");
         }
 
+        UUID customerId = null;
+        if( request.customer()!= null){
+            customerId= customerService.findOrCreate(merchantId,
+                    request.customer().email(),
+                    request.customer().name(),
+                    request.customer().phone()
+            );
+        }
+
         OrderRecord orderRecord = OrderRecord.builder()
                 .merchantId(merchantId)
+                .customerId(customerId)
                 .amount(request.amount())
                 .receipt(request.receipt())
                 .notes(request.notes())

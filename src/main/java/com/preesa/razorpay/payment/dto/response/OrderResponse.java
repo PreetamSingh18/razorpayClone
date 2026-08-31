@@ -15,6 +15,7 @@ import java.util.UUID;
 public record OrderResponse(
         UUID orderId,
         UUID merchantId,
+        UUID customerId,
         Money amount,
         String receipt,
         Map<String, Object> notes,

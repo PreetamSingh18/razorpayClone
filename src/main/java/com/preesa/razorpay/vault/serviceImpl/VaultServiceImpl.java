@@ -69,7 +69,10 @@ public class VaultServiceImpl implements VaultService {
 
         CardToken cardToken= CardToken.builder()
                         .vaultCard(card)
-                        .token(token).merchantId(merchantId).customerId(request.customerId()).build();
+                        .token(token)
+                        .merchantId(merchantId)
+                        .customerId(request.customerId())
+                       .build();
 
         cardTokenRepository.save(cardToken);
 

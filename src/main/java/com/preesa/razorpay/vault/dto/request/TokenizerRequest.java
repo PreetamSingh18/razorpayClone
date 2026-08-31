@@ -25,7 +25,6 @@ public record TokenizerRequest(
         @ExpiryYearValid
         Integer  expiryYear,
 
-        @NotNull(message = "customerId is required")
         UUID customerId,
 
 

@@ -2,10 +2,7 @@ package com.preesa.razorpay.merchant.entity;
 
 import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -19,6 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Customer extends BaseAuditEntity {
 
     @Id
