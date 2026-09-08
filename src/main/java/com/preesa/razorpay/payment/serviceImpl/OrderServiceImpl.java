@@ -1,6 +1,7 @@
 package com.preesa.razorpay.payment.serviceImpl;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.preesa.razorpay.common.enums.EventAggregateType;
 import com.preesa.razorpay.common.enums.OrderStatus;
 import com.preesa.razorpay.common.exceptions.BusinessRuleViolationException;
 import com.preesa.razorpay.common.exceptions.DuplicateResourceException;
@@ -15,6 +16,7 @@ import com.preesa.razorpay.payment.entity.OrderRecord;
 import com.preesa.razorpay.payment.entity.Payment;
 import com.preesa.razorpay.payment.mapper.OrderMapper;
 import com.preesa.razorpay.payment.mapper.PaymentMapper;
+import com.preesa.razorpay.payment.outbox.OutBoxEventPublisher;
 import com.preesa.razorpay.payment.repository.OrderRepository;
 import com.preesa.razorpay.payment.repository.PaymentRepository;
 import com.preesa.razorpay.payment.service.OrderService;
@@ -30,6 +32,7 @@ import java.sql.ClientInfoStatus;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentMapper paymentMapper;
     private final OrderMapper orderMapper;
     private final CustomerService customerService;
+    private final OutBoxEventPublisher eventPublisher;
 
     /**
      * @param merchantId
@@ -77,6 +81,19 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderRecord = orderRepository.save(orderRecord);
+
+        // Store Events in OutBox to publish in Kafka
+
+        eventPublisher.publish(EventAggregateType.ORDER,orderRecord.getId(),"ORDER_CREATED",
+                Map.of("orderId",orderRecord.getId().toString(),
+                        "merchantId",orderRecord.getMerchantId().toString(),
+                        "orderStatus",orderRecord.getOrderStatus().name(),
+                        "amountUnits",orderRecord.getAmount().getAmountUnits(),
+                        "amountCurrency",orderRecord.getAmount().getCurrency()
+
+                ));
+
+
         return orderMapper.toResponse(orderRecord);
 //        return new OrderResponse(orderRecord.getId(),merchantId,orderRecord.getAmount(),orderRecord.getReceipt(),orderRecord.getNotes(),
 //                orderRecord.getOrderStatus(),orderRecord.getAttempts(),orderRecord.getExpireAt(),orderRecord.getCreatedAt(),null);
@@ -105,6 +122,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public String cancelOrderById(UUID orderId, UUID merchantId) {
         OrderRecord orderRecords= orderRepository.findByMerchantIdAndId(merchantId,orderId);
         if(orderRecords == null){
@@ -117,6 +135,18 @@ public class OrderServiceImpl implements OrderService {
         orderRecords.setUpdatedAt(Instant.now());
         orderRecords.setUpdatedBy(merchantId.toString());
         orderRepository.save(orderRecords);
+
+        // Store Events in OutBox to publish in Kafka
+
+        eventPublisher.publish(EventAggregateType.ORDER,orderRecords.getId(),"ORDER_CANCELLED",
+                Map.of("orderId",orderRecords.getId().toString(),
+                        "merchantId",orderRecords.getMerchantId().toString(),
+                        "orderStatus",orderRecords.getOrderStatus().name(),
+                        "amountUnits",orderRecords.getAmount().getAmountUnits(),
+                        "amountCurrency",orderRecords.getAmount().getCurrency()
+
+                ));
+
         return "Order id : "+ orderId+" cancelled";
     }
 
