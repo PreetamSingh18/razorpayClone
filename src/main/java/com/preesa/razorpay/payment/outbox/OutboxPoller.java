@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.List;
@@ -26,6 +27,7 @@ public class OutboxPoller {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaProperties kafkaProperties;
     private final OutboxResultHandler outboxResultHandler;
+    private final ObjectMapper objectMapper;
 
     @Scheduled(fixedDelay = 5000)
     public void poll() {
@@ -45,8 +47,9 @@ public class OutboxPoller {
 
                 );
 
+                String payloadJson = objectMapper.writeValueAsString(envelope);
 
-                kafkaTemplate.send(topic, key, envelope).get(5, TimeUnit.SECONDS);
+                kafkaTemplate.send(topic, key, payloadJson).get(5, TimeUnit.SECONDS);
                 outboxResultHandler.handleEventPublished(event);
             } catch (Exception e) {
                 log.error("Outbox event failed , eventId: {}, attempts: {}", event.getId(),event.getAttempts());
