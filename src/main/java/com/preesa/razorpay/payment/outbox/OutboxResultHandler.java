@@ -25,7 +25,7 @@ public class OutboxResultHandler {
     @Transactional
     public void handleEventFailed(OutBoxEvent event, String errorMessage) {
       event.setAttempts(event.getAttempts()+1);
-      event.setLastError(errorMessage.length() >1000? errorMessage: errorMessage.substring(0,1000));
+      event.setLastError(errorMessage.length()<=1000 ? errorMessage: errorMessage.substring(0,1000));
       if(event.getAttempts()>= MAX_ATTEMPTS){
          event.setStatus(OutBoxStatus.FAILED);
       }
