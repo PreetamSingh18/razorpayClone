@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -27,6 +29,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString 
 public class Refund extends BaseAuditEntity {
 
     @Id
@@ -38,10 +41,8 @@ public class Refund extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "payment_id", nullable = false)
+    @ToString.Exclude
     private Payment payment;
-
-    @OneToOne
-    private OrderRecord orderRecord;
 
     @Embedded
     private Money amount;

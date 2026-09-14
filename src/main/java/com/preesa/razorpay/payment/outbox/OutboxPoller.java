@@ -41,7 +41,7 @@ public class OutboxPoller {
                         "eventType", event.getEventType(),
                         "aggregateType", event.getAggregateType().name(),
                         "aggregateId", event.getAggregateId().toString(),
-                        "date", event.getPayload()
+                        "data", event.getPayload()
 
                 );
 

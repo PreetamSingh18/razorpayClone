@@ -19,6 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString 
 public class OutBoxEvent extends BaseAuditEntity {
 
     @Id

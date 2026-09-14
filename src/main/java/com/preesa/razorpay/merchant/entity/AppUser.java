@@ -28,6 +28,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString 
 public class AppUser extends BaseAuditEntity implements UserDetails {
 
     @Id

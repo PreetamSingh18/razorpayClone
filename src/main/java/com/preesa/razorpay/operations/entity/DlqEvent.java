@@ -3,9 +3,12 @@ package com.preesa.razorpay.operations.entity;
 import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -14,12 +17,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table( name = "dle_event")
+@Table( name = "dlq_event")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder 
+@ToString 
 public class DlqEvent  extends BaseAuditEntity {
 
     @Id

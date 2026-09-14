@@ -30,6 +30,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString 
 public class OrderRecord  extends BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

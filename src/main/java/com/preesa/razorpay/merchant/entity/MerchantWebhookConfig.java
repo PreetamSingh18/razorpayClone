@@ -3,9 +3,11 @@ package com.preesa.razorpay.merchant.entity;
 import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -18,6 +20,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder 
+@ToString 
 public class MerchantWebhookConfig extends BaseAuditEntity {
 
     @Id
@@ -32,14 +36,29 @@ public class MerchantWebhookConfig extends BaseAuditEntity {
     private String targetUrl;
 
     @Column(nullable = false)
-    private String webhookSecretKey;
+    private String webhookSecret;
 
+    // for which all event, webhook will be sent
     @Column(nullable = false)
     private String eventTypes;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean enabled= true;
 
+
+   public boolean isSubscribedTo(String eventType) {
+   if (eventTypes == null || eventTypes.isBlank()) {
+       return true;
+   }
+   for (String type : eventTypes.split(",")) {
+       String trimmed = type.trim();
+       if (trimmed.equalsIgnoreCase("ALL") || trimmed.equalsIgnoreCase(eventType)) {
+           return true;
+       }
+   }
+   return false;
+}
 
 
 

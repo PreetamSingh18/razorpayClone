@@ -1,4 +1,8 @@
-package com.preesa.razorpay.vault.config;
+package com.preesa.razorpay.common.config;
+
+import java.util.Base64;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,19 +11,18 @@ import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 
-@Configuration
-public class VaultEncryptionConfig {
 
+@Configuration 
+public class AesEncryptionConfig {
+    
     @Value("${vault.service.master-key}")
     private String masterKey;
 
-    public static BytesEncryptor panEncryptor(byte[] dek){
-        SecretKeySpec dekByte= new SecretKeySpec(dek,"AES");
+    @Bean 
+    public  BytesEncryptor masterKeyEncryptor(){
+         byte[] masterKeyByte= Base64.getDecoder().decode(masterKey);
+          SecretKeySpec dekByte= new SecretKeySpec(masterKeyByte,"AES/GCM/NoPadding");
         return new AesBytesEncryptor(dekByte, KeyGenerators.secureRandom(12), AesBytesEncryptor.CipherAlgorithm.GCM);
     }
-
-
 }

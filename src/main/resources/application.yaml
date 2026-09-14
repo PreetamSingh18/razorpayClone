@@ -82,5 +82,12 @@ app:
     topics:
       payment: payments.events
       order: orders.events
-      refund: refund.events
-      settlement: settlement.events
+      refund: refunds.events
+      settlement: settlements.events
+  webhook:
+    delivery:
+      redis-key: webhook-retry
+      poll-batch-size: 100
+      signature-header: X-Razorpay-Signature
+  
+

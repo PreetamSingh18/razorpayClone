@@ -15,6 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@ToString 
 public class VaultCard  extends BaseAuditEntity {
 
     @Id

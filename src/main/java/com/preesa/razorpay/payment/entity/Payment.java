@@ -25,6 +25,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString 
 public class Payment  extends BaseAuditEntity {
 
     @Id

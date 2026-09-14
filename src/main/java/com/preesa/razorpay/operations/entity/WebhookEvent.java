@@ -4,9 +4,12 @@ import com.preesa.razorpay.common.entity.BaseAuditEntity;
 import com.preesa.razorpay.common.enums.WebhookEventStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,6 +23,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder 
+@ToString 
 public class WebhookEvent  extends BaseAuditEntity  {
 
     @Id
@@ -47,6 +52,7 @@ public class WebhookEvent  extends BaseAuditEntity  {
     private String signature;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer attempts= 0;
 
     private Instant lastRetryAt;
@@ -55,7 +61,11 @@ public class WebhookEvent  extends BaseAuditEntity  {
     private Integer lastResponseCode;
 
     @Column(length = 1000)
-    private String lastResponseBody;
+    private String lastResponseBody;  
+    
+    private Instant nextRetryAt;
+
+
 
     private Instant deliveredAt;
 }

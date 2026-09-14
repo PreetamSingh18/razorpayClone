@@ -5,11 +5,13 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Embeddable
 @Getter
 @Setter
+@ToString 
 public class Money {
     private Long amountUnits;
     private String currency;
