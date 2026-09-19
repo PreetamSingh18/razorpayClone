@@ -26,5 +26,18 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Payment p where p.id =:paymentId ")
     Optional<Payment> findByIdForUpdate(UUID id);
+
+    /*
+     * @Lock(LockModeType.PESSIMISTIC_WRITE) adds a FOR UPDATE clause at the end of
+     * select query.
+     * It prevents another transaction from modifying or locking those same rows
+     * until your transaction commits/rolls back.
+     * e.g : select p from Payment p where p.merchantId = :merchantId and p.status =
+     * :status and p.settledAt is null FOR UPDATE;
+     */
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Payment p where p.merchantId =:merchantId and p.status =: captured and p.settledAt is null ")
+    List<Payment> findByMerchantIdAndStatusForUpdate(UUID merchantId, PaymentStatus captured);
 }
 

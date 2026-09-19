@@ -5,6 +5,7 @@ import com.preesa.razorpay.common.entity.Money;
 import com.preesa.razorpay.common.enums.SettlementStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString 
+@Builder 
 public class Settlement  extends BaseAuditEntity {
 
     @Id
@@ -71,6 +73,8 @@ public class Settlement  extends BaseAuditEntity {
     private SettlementStatus status;
 
     private Instant settledAt;
+
+    private String failureReason;
 
 
 

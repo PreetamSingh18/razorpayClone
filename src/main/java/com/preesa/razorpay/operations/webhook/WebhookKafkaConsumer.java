@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.preesa.razorpay.common.dto.WebhookTarget;
 import com.preesa.razorpay.common.enums.WebhookEventStatus;
 import com.preesa.razorpay.common.util.SignerUtil;
-import com.preesa.razorpay.merchant.api.MerchantWebhookApi;
+import com.preesa.razorpay.merchant.api.MerchantLookupService;
 import com.preesa.razorpay.operations.entity.WebhookEvent;
 import com.preesa.razorpay.operations.repository.DlqEventRepository;
 import com.preesa.razorpay.operations.repository.WebhookEventRepository;
@@ -31,7 +31,7 @@ import tools.jackson.databind.json.JsonMapper;
 @Slf4j 
 public class WebhookKafkaConsumer {
 
-    private final MerchantWebhookApi merchantWebhookApi;
+    private final MerchantLookupService merchantWebhookApi;
     private final JsonMapper jsonMapper;
     private final SignerUtil signerUtill;
     private final WebhookEventRepository webhookEventRepository;

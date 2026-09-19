@@ -25,8 +25,8 @@ public class Money {
         this.currency=currency;
     }
 
-    Money of (Long amountUnits, String currency){
-        return new Money(this.amountUnits,this.currency);
+    public static Money of (Long amountUnits, String currency){
+        return new Money(amountUnits,currency);
     }
 
 

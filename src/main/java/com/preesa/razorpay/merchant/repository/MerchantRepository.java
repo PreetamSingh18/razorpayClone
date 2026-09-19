@@ -1,6 +1,9 @@
 package com.preesa.razorpay.merchant.repository;
 
+import java.util.List;
 import java.util.UUID;
+
+import com.preesa.razorpay.common.enums.MerchantStatus;
 import com.preesa.razorpay.merchant.entity.Merchant;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -11,5 +14,7 @@ public interface MerchantRepository extends JpaRepository<Merchant, UUID> {
     boolean existsByEmail(String email);
 
     Object findByEmail(String email);
+
+    List<UUID> findAllIdsByStatus(MerchantStatus active);
 }
 
