@@ -1,0 +1,865 @@
+{
+  "info": {
+    "name": "Razorpay Clone API Collection",
+    "description": "Collection for testing merchant auth, API keys, webhooks, orders, payments, and vault APIs against the GitHub Codespaces host.\n\nBase URL: https://potential-xylophone-g6w4vwgrqx4fp99r-8080.app.github.dev",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://potential-xylophone-g6w4vwgrqx4fp99r-8080.app.github.dev",
+      "type": "string"
+    },
+    {
+      "key": "merchantName",
+      "value": "Test Merchant",
+      "type": "string"
+    },
+    {
+      "key": "merchantEmail",
+      "value": "merchant@example.com",
+      "type": "string"
+    },
+    {
+      "key": "merchantPassword",
+      "value": "Password123!",
+      "type": "string"
+    },
+    {
+      "key": "businessName",
+      "value": "Test Business",
+      "type": "string"
+    },
+    {
+      "key": "businessType",
+      "value": "TRUST",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "keyId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secretKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiKeyEnvironment",
+      "value": "DEV",
+      "type": "string"
+    },
+    {
+      "key": "webhookUrl",
+      "value": "https://potential-xylophone-g6w4vwgrqx4fp99r-8080.app.github.dev/v1/api/dummy/test",
+      "type": "string"
+    },
+    {
+      "key": "eventTypes",
+      "value": "ORDER_CREATED,PAYMENT_STATUS_CHANGED",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "configId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{merchantName}}\",\n  \"email\": \"{{merchantEmail}}\",\n  \"password\": \"{{merchantPassword}}\",\n  \"businessName\": \"{{businessName}}\",\n  \"businessType\": \"{{businessType}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "auth",
+                "signup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.accessToken) {", 
+                  "  pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "  console.log('Saved accessToken');",
+                  "} else {",
+                  "  console.log('No accessToken returned');",
+                  "}" 
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{merchantEmail}}\",\n  \"password\": \"{{merchantPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Merchant API Keys",
+      "item": [
+        {
+          "name": "Create API Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.keyId && res.keySecret) {",
+                  "  pm.collectionVariables.set('keyId', res.keyId);",
+                  "  pm.collectionVariables.set('secretKey', res.keySecret);",
+                  "  console.log('Saved keyId and secretKey');",
+                  "} else {",
+                  "  console.log('No keyId/keySecret returned');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"environment\": \"{{apiKeyEnvironment}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/api-keys/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "api-keys",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All API Keys",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/api-keys/getAllApiKey",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "api-keys",
+                "getAllApiKey"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Revoke API Key",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });",
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "if (!keyId) throw new Error('Missing keyId. Run Create API Key first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/api-keys/revoke/{{keyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "api-keys",
+                "revoke",
+                "{{keyId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rotate API Key",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });",
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "if (!keyId) throw new Error('Missing keyId. Run Create API Key first.');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.keySecret) {",
+                  "  pm.collectionVariables.set('secretKey', res.keySecret);",
+                  "  console.log('Updated secretKey after rotate');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/api-keys/rotate/{{keyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "api-keys",
+                "rotate",
+                "{{keyId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook Configuration",
+      "item": [
+        {
+          "name": "Create Webhook",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.configId) {",
+                  "  pm.collectionVariables.set('configId', res.configId);",
+                  "  console.log('Saved configId');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUrl\": \"{{webhookUrl}}\",\n  \"eventTypes\": \"{{eventTypes}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/webhooks/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "webhooks",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Webhooks",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/webhooks/getAllWebhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "webhooks",
+                "getAllWebhook"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Webhook By Id",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });",
+                  "const configId = pm.collectionVariables.get('configId');",
+                  "if (!configId) throw new Error('Missing configId. Run Create Webhook first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/webhooks/{{configId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "webhooks",
+                "{{configId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Webhook",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });",
+                  "const configId = pm.collectionVariables.get('configId');",
+                  "if (!configId) throw new Error('Missing configId. Run Create Webhook first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUrl\": \"https://example.com/updated-webhook\",\n  \"eventTypes\": \"PAYMENT_STATUS_CHANGED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/webhooks/update/{{configId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "webhooks",
+                "update",
+                "{{configId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Webhook",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const token = pm.collectionVariables.get('accessToken');",
+                  "if (!token) throw new Error('Missing accessToken. Run Login first.');",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });",
+                  "const configId = pm.collectionVariables.get('configId');",
+                  "if (!configId) throw new Error('Missing configId. Run Create Webhook first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/merchants/webhooks/delete/{{configId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "merchants",
+                "webhooks",
+                "delete",
+                "{{configId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.orderId) {",
+                  "  pm.collectionVariables.set('orderId', res.orderId);",
+                  "  console.log('Saved orderId');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": {\n    \"amountUnits\": 2500,\n    \"currency\": \"INR\"\n  },\n  \"receipt\": \"rcpt_001\",\n  \"notes\": {\n    \"source\": \"postman\"\n  },\n  \"customer\": {\n    \"name\": \"Alice Smith\",\n    \"email\": \"alice@example.com\",\n    \"phone\": \"9999999999\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/orders/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "orders",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order By Id",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });",
+                  "const orderId = pm.collectionVariables.get('orderId');",
+                  "if (!orderId) throw new Error('Missing orderId. Run Create Order first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/orders/get/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "orders",
+                "get",
+                "{{orderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });",
+                  "const orderId = pm.collectionVariables.get('orderId');",
+                  "if (!orderId) throw new Error('Missing orderId. Run Create Order first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/orders/cancel/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "orders",
+                "cancel",
+                "{{orderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payments for Order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });",
+                  "const orderId = pm.collectionVariables.get('orderId');",
+                  "if (!orderId) throw new Error('Missing orderId. Run Create Order first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/orders/getpayments/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "orders",
+                "getpayments",
+                "{{orderId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Initiate Payment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });",
+                  "const orderId = pm.collectionVariables.get('orderId');",
+                  "if (!orderId) throw new Error('Missing orderId. Run Create Order first.');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.id) {",
+                  "  pm.collectionVariables.set('paymentId', res.id);",
+                  "  console.log('Saved paymentId');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"UPI\",\n  \"methodDetails\": {\n    \"vpa\": \"testuser@upi\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/payments/initiate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "payments",
+                "initiate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Capture Payment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });",
+                  "const paymentId = pm.collectionVariables.get('paymentId');",
+                  "if (!paymentId) throw new Error('Missing paymentId. Run Initiate Payment first.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/payments/{{paymentId}}/capture",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "payments",
+                "{{paymentId}}",
+                "capture"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vault",
+      "item": [
+        {
+          "name": "Tokenizer",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const keyId = pm.collectionVariables.get('keyId');",
+                  "const secretKey = pm.collectionVariables.get('secretKey');",
+                  "if (!keyId || !secretKey) throw new Error('Missing API key pair. Run Create API Key first.');",
+                  "const auth = btoa(keyId + ':' + secretKey);",
+                  "pm.request.headers.upsert({ key: 'Authorization', value: 'Basic ' + auth });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pan\": \"4111111111111111\",\n  \"cvv\": \"123\",\n  \"expiryMonth\": \"12\",\n  \"expiryYear\": 2028,\n  \"customerId\": \"00000000-0000-0000-0000-000000000001\",\n  \"cardHolderName\": \"Alice Smith\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/vault/tokenizer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "vault",
+                "tokenizer"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
