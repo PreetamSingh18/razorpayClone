@@ -38,7 +38,7 @@ public class DlqEvent  extends BaseAuditEntity {
     private Map<String,Object> payload;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "webhook_id")
+    @JoinColumn(name = "webhook_event_id")
     private WebhookEvent webhookEvent;
 
     private String finalError;

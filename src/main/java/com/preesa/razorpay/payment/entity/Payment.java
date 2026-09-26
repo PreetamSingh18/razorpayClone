@@ -53,7 +53,7 @@ public class Payment  extends BaseAuditEntity {
     @Column(name = "method_details", columnDefinition ="jsonb" )
     private Map<String,Object> methodDetails;
 
-    @Column(nullable = false,length = 100)
+    @Column(length = 100)
     private String idempotencyKey;
 
     @Column(length = 100)

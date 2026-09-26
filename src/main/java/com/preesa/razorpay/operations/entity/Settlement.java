@@ -40,8 +40,8 @@ public class Settlement  extends BaseAuditEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "amountUnits", column = @Column(name = "refund_amount_units", nullable = false)),
-            @AttributeOverride(name = "currency", column = @Column(name = "refund_currency", nullable = false))
+            @AttributeOverride(name = "amountUnits", column = @Column(name = "refund_amount_units")),
+            @AttributeOverride(name = "currency", column = @Column(name = "refund_currency"))
     })
     private Money refundAmount;
     

@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
     private final MerchantContext merchantContext;
 
 
