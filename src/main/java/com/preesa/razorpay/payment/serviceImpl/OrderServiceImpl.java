@@ -129,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ResourceNotFoundException("ORDER",orderId);
         }
         else if(orderRecords.getOrderStatus() == OrderStatus.CANCELLED || orderRecords.getOrderStatus() == OrderStatus.PAID){
-            throw new BusinessRuleViolationException("ORDER_CANNOT_CANCE0L","Order cannot be cancelled with status "+orderRecords.getOrderStatus().name());
+            throw new BusinessRuleViolationException("ORDER_CANNOT_CANCEL","Order cannot be cancelled with status "+orderRecords.getOrderStatus().name());
         }
         orderRecords.setOrderStatus(OrderStatus.CANCELLED);
         orderRecords.setUpdatedAt(Instant.now());

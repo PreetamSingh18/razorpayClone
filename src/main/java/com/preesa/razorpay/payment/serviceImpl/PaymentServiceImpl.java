@@ -128,6 +128,7 @@ public class PaymentServiceImpl implements PaymentService {
      * @return
      */
     @Override
+    @Transactional 
     public PaymentResponse capture(UUID merchantId, UUID paymentId) {
 //        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId).orElseThrow(() -> new ResourceNotFoundException("payment", paymentId));
 

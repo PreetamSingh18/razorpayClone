@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.initiate(merchantContext.getMerchantId(),request));
     }
     @PostMapping("/{paymentId}/capture")
-    public ResponseEntity<PaymentResponse>capture(UUID merchantId,UUID paymentId){
+    public ResponseEntity<PaymentResponse>capture(@PathVariable UUID paymentId){
         return ResponseEntity.ok(paymentService.capture(merchantContext.getMerchantId(),paymentId));
     }
 

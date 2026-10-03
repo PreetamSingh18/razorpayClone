@@ -1,5 +1,6 @@
 package com.preesa.razorpay.merchant.serviceImpl;
 
+import com.preesa.razorpay.common.exceptions.BusinessRuleViolationException;
 import com.preesa.razorpay.common.exceptions.ResourceNotFoundException;
 import com.preesa.razorpay.common.util.RandomizerUtil;
 import com.preesa.razorpay.merchant.cache.ApiKeyCache;
@@ -107,7 +108,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         if(isEmpty(apiKey)){
             throw new ResourceNotFoundException("apiKey",keyId);
         }
-        if(!apiKey.getEnabled()) throw new RuntimeException("Can't rotate a disabled key");
+        if (!apiKey.getEnabled()){
+            throw new BusinessRuleViolationException("API_KEY_CANNOT_ROTATE","Can't rotate a disabled key");
+        }
         String newRawSecretKey= RandomizerUtil.randomBase64(40);// TODO : encrypt
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
         apiKey.setKeySecretHash(BCRYPT.encode(newRawSecretKey));

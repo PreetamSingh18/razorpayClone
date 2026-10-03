@@ -24,6 +24,7 @@ public class BankCallbackSimulator {
 
     @Scheduled(fixedRateString = "${payment.simulator.poll-interval-ms:5000}" )
     public void processCallBacks(){
+        log.info("Processing bank callbacks simulator at {}", Instant.now());
         Instant globalWindow = Instant.now().minusSeconds(1);
         List<Payment>paymentList= paymentRepository
                 .findAllByStatusAndUpdatedAtBefore(PaymentStatus.AUTHORIZING,globalWindow);

@@ -52,7 +52,7 @@ vault:
 
 payment:
   simulator:
-    poll-interval-ms: 500000000
+    poll-interval-ms: 5000
     chaos-mode: NORMAL
     methods:
       UPI:
