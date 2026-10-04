@@ -1,8 +1,8 @@
 # razorpayClone — Functional Specification & Technical Design Document
 
-**Document Owner:** Preetam Singh
-**System:** razorpayClone — Payment Gateway Backend (Modular Monolith)
-**Stack:** Java 25 / Spring Boot 4 (Spring Security, Spring Data JPA/Hibernate, Spring Kafka, Spring Data Redis) / PostgreSQL / Redis / Apache Kafka
+**Document Owner:** Preetam Singh \
+**System:** razorpayClone — Payment Gateway Backend (Modular Monolith) \
+**Stack:** Java 25 / Spring Boot 4 (Spring Security, Spring Data JPA/Hibernate, Spring Kafka, Spring Data Redis) / PostgreSQL / Redis / Apache Kafka \
 **Scope:** This document is derived directly from the current codebase (`com.preesa.razorpay`) — entity fields, enum values, endpoints, and operational parameters reflect the real implementation, not idealized assumptions.
 
 ---
