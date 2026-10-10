@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.apache.coyote.BadRequestException;
 
 import io.jsonwebtoken.JwtException;
 
@@ -63,6 +64,24 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of("RATE_LIMIT_EXCEPTION", ex.getMessage()));
     }
 
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of("INVALID_JWT_TOKEN", "Invalid or expired JWT token"));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException (BadRequestException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of("BAD_REQUEST", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException (IllegalArgumentException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of("ILLEGAL_ARGUMENT", ex.getMessage()));
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException (Exception ex, HttpServletRequest request){
@@ -70,10 +89,6 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of("INTERNAL_SERVER_ERROR", ex.getMessage()));
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponse.of("INVALID_JWT_TOKEN", "Invalid or expired JWT token"));
-    }
+   
 
 }

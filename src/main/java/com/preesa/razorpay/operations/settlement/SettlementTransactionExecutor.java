@@ -122,6 +122,12 @@ public class SettlementTransactionExecutor {
         if (errorCode == null) {
             settlement.setStatus(SettlementStatus.PROCESSED);
             settlement.setSettledAt(Instant.now());
+
+            
+            SettlementPayment settlementPayment = settlementPaymentRepository.findBySettlementId(settlement.getId());
+            
+            paymentLookupService.markPaymentAsSettled(settlementPayment.getId().getPaymentId());
+
             settlementRepository.save(settlement);
 
             log.info("Settlement processsed Successfully , settlementId :{}", id);
